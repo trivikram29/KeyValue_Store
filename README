@@ -1,0 +1,40 @@
+The repo consists of  a rest api service in Java using Jersey Framework.
+A docker file to host the rest api service.
+
+Command for bilding docker image:
+
+1. Move to the folder where you have docker file.
+2. docker build -t 'Imagename':'Tag' .
+3. docker run -d -p some_portno:8080 'Imagename':'Tag'
+4. You can test the service by curl -X GET localhost:some_portno/hello
+
+IMPOTANT NOTE: Since we are using zookeeper, we need to instantiate zookeeper servers too. So a sleep time of 10sec is not sufficient for the system as used in given test suite. Please make it to 20 seconds.
+
+Please go thorugh the design_document for an overview of the work done in this project.
+
+The below procedure is given by Nikhil, TA for this course. We have copied it here so that we can refer it in future.
+
+#Step 1: Create a docker network (named my-net in this case) with a subnet so you are in control of the IP addresses
+nik HW3$ sudo docker network create --subnet=10.0.0.0/16 my-net
+dd619ae652efffcb79ad91016891d9c80d8c0852d7d40feb821d8336528a445f
+
+#Build your solution
+nik HW3$ sudo docker build -t student/hw3 .
+
+#Decide what IP addresses and ports you want to use, and come up with a MEMBERS list
+#In this example, we decided we'll have IP addresses 10.0.0.20, 10.0.0.21, 10.0.0.22
+#and PORTS 12345,12346,12347
+
+#Run the first instance with 10.0.0.20:12345
+nik HW3$ sudo docker run -p 49160:12345 --net=my-net --ip='10.0.0.20' -e 'IP=10.0.0.20' -e 'PORT=12345' -e 'MEMBERS=10.0.0.20:12345,10.0.0.21:12346,10.0.0.22:12347' -d student/hw3
+dcb029f9779e544168a2ad2d4316e505c0dcc7f3ea64e23cb9a1bbcc54bbb350
+
+#Run the second instance with 10.0.0.21:12346
+nik HW3$ sudo docker run -p 49161:12346 --net=my-net --ip='10.0.0.21' -e 'IP=10.0.0.21' -e 'PORT=12346' -e 'MEMBERS=10.0.0.20:12345,10.0.0.21:12346,10.0.0.22:12347' -d student/hw3
+74a69ea764475957ed7e45a1edeb92070545f024c73d035e03b0d5e632ac271e
+
+#Run the third instance with 10.0.0.22:12347
+nik HW3$ sudo docker run -p 49162:12347 --net=my-net --ip='10.0.0.22' -e 'IP=10.0.0.22' -e 'PORT=12347' -e 'MEMBERS=10.0.0.20:12345,10.0.0.21:12346,10.0.0.22:12347' -d student/hw3
+f21682c3569b894c88a298e6624b8229a79fa69f4fa76039db81a0964d46a77d
+
+
